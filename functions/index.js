@@ -5,19 +5,25 @@ var db = admin.database();
 
 exports.getFarmData = functions.https.onRequest((request, response) => {
   const farmID = request.query.farmID;
+  const topic = request.query.topic;
   if (request.method === "GET") {
-    var ref = db.ref(farmID);
-    ref.limitToLast(1).on("child_added", (snapshot) => {
-      response.send(JSON.stringify(snapshot.val()));
-    });
-  }
-});
-
-exports.getAll = functions.https.onRequest((request, response) => {
-  if (request.method === "GET") {
-    var ref = db.ref();
-    ref.once("value", (snapshot) => {
-      response.send(JSON.stringify(snapshot.val()));
-    });
+    if (topic === "environment") {
+      var envi_ref = db.ref(farmID + "/environment");
+      envi_ref.limitToLast(1).on("child_added", (snapshot) => {
+        response.send(JSON.stringify(snapshot.val()));
+      });
+    }
+    if (topic === "water") {
+      var water_ref = db.ref(farmID + "/water");
+      water_ref.limitToLast(1).on("child_added", (snapshot) => {
+        response.send(JSON.stringify(snapshot.val()));
+      });
+    }
+    if (topic === "info") {
+      var info_ref = db.ref(farmID + "/information");
+      info_ref.once("value", (snapshot) => {
+        response.send(JSON.stringify(snapshot.val()));
+      });
+    }
   }
 });
