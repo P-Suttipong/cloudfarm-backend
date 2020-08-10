@@ -6,6 +6,7 @@ var db = admin.database();
 exports.getFarmData = functions.https.onRequest((request, response) => {
   const farmID = request.query.farmID;
   const topic = request.query.topic;
+
   if (request.method === "GET") {
     if (topic === "environment") {
       var envi_ref = db.ref(farmID + "/environment");
@@ -26,4 +27,19 @@ exports.getFarmData = functions.https.onRequest((request, response) => {
       });
     }
   }
+});
+
+exports.saveLocation = functions.https.onRequest(async (request, response) => {
+  const farmID = request.query.farmID;
+  const lat = request.query.lat;
+  const long = request.query.long;
+
+  if (request.method === "PUT") {
+    var location_ref = db.ref(farmID + "/location");
+    await location_ref.update({
+      lat: lat,
+      long: long,
+    });
+  }
+  response.send({ msg: true });
 });
