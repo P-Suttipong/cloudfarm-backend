@@ -26,6 +26,12 @@ exports.getFarmData = functions.https.onRequest((request, response) => {
         response.send(JSON.stringify(snapshot.val()));
       });
     }
+    if (topic === "location") {
+      var location_ref = db.ref(farmID + "/location");
+      location_ref.once("value", (snapshot) => {
+        response.send(JSON.stringify(snapshot.val()));
+      });
+    }
   }
 });
 
@@ -36,10 +42,18 @@ exports.saveLocation = functions.https.onRequest(async (request, response) => {
 
   if (request.method === "PUT") {
     var location_ref = db.ref(farmID + "/location");
-    await location_ref.update({
-      lat: lat,
-      long: long,
-    });
+    await location_ref.update(
+      {
+        lat: lat,
+        long: long,
+      },
+      (error) => {
+        if (error) {
+          response.send({ msg: "ERROR: " + error });
+        } else {
+          response.send({ msg: "LOCATION UPDATE COMPLETE" });
+        }
+      }
+    );
   }
-  response.send({ msg: true });
 });
