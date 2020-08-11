@@ -1,9 +1,10 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const { response } = require("express");
 admin.initializeApp(functions.config().firebase);
 var db = admin.database();
 
-exports.getFarmData = functions.https.onRequest((request, response) => {
+exports.getFarmData = functions.https.onRequest(async (request, response) => {
   const farmID = request.query.farmID;
   const topic = request.query.topic;
 
@@ -37,8 +38,8 @@ exports.getFarmData = functions.https.onRequest((request, response) => {
 
 exports.saveLocation = functions.https.onRequest(async (request, response) => {
   const farmID = request.query.farmID;
-  const lat = request.query.lat;
-  const long = request.query.long;
+  const lat = request.body.lat;
+  const long = request.body.long;
 
   if (request.method === "PUT") {
     var location_ref = db.ref(farmID + "/location");
@@ -51,7 +52,8 @@ exports.saveLocation = functions.https.onRequest(async (request, response) => {
         if (error) {
           response.send({ msg: "ERROR: " + error });
         } else {
-          response.send({ msg: "LOCATION UPDATE COMPLETE" });
+          response.send({ msg: "UPDATED LAT: " + lat + " LONG: " + long });
+          // response.send(JSON.stringify(request.body));
         }
       }
     );
