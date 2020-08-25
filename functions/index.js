@@ -11,26 +11,26 @@ exports.getFarmData = functions.https.onRequest(async (request, response) => {
   if (request.method === "GET") {
     if (topic === "environment") {
       var envi_ref = db.ref(farmID + "/environment");
-      envi_ref.limitToLast(1).on("child_added", (snapshot) => {
-        response.send(JSON.stringify(snapshot.val()));
+      envi_ref.limitToLast(1).on("child_added", (data) => {
+        response.send(JSON.stringify(data.val()));
       });
     }
     if (topic === "water") {
       var water_ref = db.ref(farmID + "/water");
-      water_ref.limitToLast(1).on("child_added", (snapshot) => {
-        response.send(JSON.stringify(snapshot.val()));
+      water_ref.limitToLast(1).on("child_added", (data) => {
+        response.send(JSON.stringify(data.val()));
       });
     }
     if (topic === "info") {
       var info_ref = db.ref(farmID + "/information");
-      info_ref.once("value", (snapshot) => {
-        response.send(JSON.stringify(snapshot.val()));
+      info_ref.once("value", (data) => {
+        response.send(JSON.stringify(data.val()));
       });
     }
     if (topic === "location") {
       var location_ref = db.ref(farmID + "/location");
-      location_ref.once("value", (snapshot) => {
-        response.send(JSON.stringify(snapshot.val()));
+      location_ref.once("value", (data) => {
+        response.send(JSON.stringify(data.val()));
       });
     }
   }
