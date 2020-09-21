@@ -9,9 +9,21 @@ exports.getFarmData = functions.https.onRequest(async (request, response) => {
   const topic = request.query.topic;
 
   if (request.method === "GET") {
+    if (topic === "lux") {
+      var lux_ref = db.ref(farmID + "/lux");
+      lux_ref.limitToLast(1).on("child_added", (data) => {
+        response.send(JSON.stringify(data.val()));
+      });
+    }
     if (topic === "environment") {
       var envi_ref = db.ref(farmID + "/environment");
       envi_ref.limitToLast(1).on("child_added", (data) => {
+        response.send(JSON.stringify(data.val()));
+      });
+    }
+    if (topic === "allEnvironment") {
+      var allenvi_ref = db.ref(farmID + "/environment");
+      allenvi_ref.once("value", (data) => {
         response.send(JSON.stringify(data.val()));
       });
     }
@@ -111,5 +123,14 @@ exports.saveFarmInformation = functions.https.onRequest(
         );
       }
     }
+  }
+);
+
+exports.deleteFarmdata = functions.https.onRequest(
+  async (request, response) => {
+    const farmID = request.query.farmID;
+    var database_ref = db.ref(farmID);
+    await database_ref.remove();
+    response.send({ msg: "DELETED" });
   }
 );
